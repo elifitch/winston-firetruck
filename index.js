@@ -1,18 +1,23 @@
 const Transport = require('winston-transport');
 const AWS = require('aws-sdk');
-AWS.config.setPromisesDependency(Promise);
 
 module.exports = class FirehoseTransport extends Transport {
   constructor(opts) {
     super(opts);
-    const defaultFormat = msg => msg
+    if (!this.firehoseParams.DeliveryStreamName) {
+      throw new Error ('Must define firehoseParams.DeliveryStreamName')
+    }
+    const defaultFormat = msg => msg;
     this.firehose = new AWS.Firehose(opts.firehoseParams || {});
-    this.format = opts.format || defaultFormat;
+    this.formatMessage = opts.formatMessage || defaultFormat;
+    this.firehoseParams = opts.firehoseParams;
+    
+    this.send = this.send.bind(this);
   }
 
   send(msg) {
     return this.firehose.putRecord({
-      DeliveryStreamName: this.firehoseParams.deliveryStreamName,
+      ...this.firehoseParams,
       Record: {
         Data: msg
       }
@@ -20,14 +25,13 @@ module.exports = class FirehoseTransport extends Transport {
   }
 
   log(message, callback) {
-    const { format, send } = this;
+    const { formatMessage, send } = this;
     const cb = typeof callback === 'function' ? callback : () => {};
-    return send(format(message)).then(
-      () => cb(null, true),
-      error => {
+    return send(formatMessage(message))
+      .then(cb(null, true))
+      .catch(error => {
         cb(error, false);
         throw new Error(error);
-      }
-    )
+      })
   }
 };
