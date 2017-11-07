@@ -9,7 +9,7 @@
   "scripts": {
     "build": "npm run lint && ./node_modules/.bin/babel index.js -d dist/",
     "lint": "eslint index.js",
-    "publish": "npm run build && npm run publish",
+    "prepublish": "npm run build",
     "release": "./node_modules/.bin/release-it",
     "release:patch": "npm run release patch",
     "release:minor": "npm run release minor",
