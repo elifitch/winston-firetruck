@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
 module.exports = class FirehoseTransport extends Transport {
   constructor(opts) {
     super(opts);
-    if (!this.firehoseParams.DeliveryStreamName) {
+    if (!opts.firehoseParams.DeliveryStreamName) {
       throw new Error ('Must define firehoseParams.DeliveryStreamName')
     }
     const defaultFormat = msg => msg;
