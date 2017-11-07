@@ -1,6 +1,6 @@
 {
   "name": "winston-firetruck",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Tiny, dead simple Kinesis Firehose transport for Winston.js",
   "main": "dist/index.js",
   "engines": {

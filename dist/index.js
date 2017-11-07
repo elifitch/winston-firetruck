@@ -25,7 +25,6 @@ function (_Transport) {
     _classCallCheck(this, FirehoseTransport);
 
     _this = _possibleConstructorReturn(this, (FirehoseTransport.__proto__ || Object.getPrototypeOf(FirehoseTransport)).call(this, opts));
-    console.log(_this);
 
     if (!opts.firehoseParams.DeliveryStreamName) {
       throw new Error('Must define firehoseParams.DeliveryStreamName');
