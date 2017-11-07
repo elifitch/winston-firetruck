@@ -1,26 +1,33 @@
 const Transport = require('winston-transport');
+const AWS = require('aws-sdk');
+AWS.config.setPromisesDependency(Promise);
 
-//
-// Inherit from `winston-transport` so you can take advantage
-// of the base functionality and `.exceptions.handle()`.
-//
-export class FirehoseTransport extends Transport {
+module.exports = class FirehoseTransport extends Transport {
   constructor(opts) {
     super(opts);
-    //
-    // Consume any custom options here. e.g.:
-    // - Connection information for databases
-    // - Authentication information for APIs (e.g. loggly, papertrail, 
-    //   logentries, etc.).
-    //
+    const defaultFormat = msg => msg
+    this.firehose = new AWS.Firehose(opts.firehoseParams || {});
+    this.format = opts.format || defaultFormat;
   }
 
-  log(info, callback) {
-    setImmediate(function () {
-      this.emit('logged', info);
-    });
+  send(msg) {
+    return this.firehose.putRecord({
+      DeliveryStreamName: this.firehoseParams.deliveryStreamName,
+      Record: {
+        Data: msg
+      }
+    }).promise();
+  }
 
-    // Perform the writing to the remote service
-    callback();
+  log(message, callback) {
+    const { format, send } = this;
+    const cb = typeof callback === 'function' ? callback : () => {};
+    return send(format(message)).then(
+      () => cb(null, true),
+      error => {
+        cb(error, false);
+        throw new Error(error);
+      }
+    )
   }
 };
