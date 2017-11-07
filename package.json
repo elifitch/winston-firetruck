@@ -9,7 +9,11 @@
   "scripts": {
     "build": "npm run lint && ./node_modules/.bin/babel index.js -d dist/",
     "lint": "eslint .",
-    "publish": "npm run build && npm run publish"
+    "publish": "npm run build && npm run publish",
+    "release": "./node_modules/.bin/release-it",
+    "release:patch": "npm run release patch",
+    "release:minor": "npm run release minor",
+    "release:major": "npm run release major"
   },
   "repository": {
     "type": "git",
@@ -39,7 +43,8 @@
     "@babel/polyfill": "^7.0.0-beta.31",
     "@babel/preset-env": "^7.0.0-beta.31",
     "aws-sdk": "^2.145.0",
-    "eslint": "^4.10.0"
+    "eslint": "^4.10.0",
+    "release-it": "^3.2.0"
   },
   "peerDependencies": {
     "winston": "^3.0.0"
